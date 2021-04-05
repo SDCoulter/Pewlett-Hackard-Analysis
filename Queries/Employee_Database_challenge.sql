@@ -1,3 +1,4 @@
+-- ## DELIVERABLE 1 ##
 -- Create Retirement Titles table.
 SELECT e.emp_no,
 		e.first_name,
@@ -10,9 +11,9 @@ FROM employees AS e
 	INNER JOIN titles AS ti
 		ON (e.emp_no = ti.emp_no)
 WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
-ORDER BY e.emp_no
+ORDER BY e.emp_no;
 
--- Use Dictinct with Orderby to remove duplicate rows
+-- Use Dictinct with Orderby to remove duplicate rows.
 SELECT DISTINCT ON (rt.emp_no) rt.emp_no,
     rt.first_name,
     rt.last_name,
@@ -27,4 +28,24 @@ SELECT COUNT(ut.title),
 INTO retiring_titles
 FROM unique_titles AS ut
 GROUP BY ut.title
-ORDER BY COUNT(ut.title) DESC
+ORDER BY COUNT(ut.title) DESC;
+
+
+-- ## DELIVERABLE 2 ##
+-- Query for employees eligible for the mentorship program.
+SELECT DISTINCT ON(e.emp_no) e.emp_no,
+		e.first_name,
+		e.last_name,
+		e.birth_date,
+		de.from_date,
+		de.to_date,
+		ti.title
+INTO mentorship_eligibilty
+FROM employees AS e
+		INNER JOIN dept_emp AS de
+				ON (e.emp_no = de.emp_no)
+		INNER JOIN titles AS ti
+				ON (e.emp_no = ti.emp_no)
+WHERE (e.birth_date BETWEEN '1965-01-01' AND '1965-12-31')
+	AND (de.to_date = '9999-01-01')
+ORDER BY e.emp_no
