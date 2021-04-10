@@ -18,7 +18,7 @@ To find the number of retiring employees by title, we first had to create a tabl
 
 ![Retiring by Job Title Table](Images/count_r_by_title.png)
 
-The second objective was to find the number of employees eligible for the mentorship program ***CHECK***. To do this we created a new table `mentorship_eligibilty` by again using a `SELECT DISTINCT ON` statement to get unique results through employee number, and joining the `employee` table with the `dept_emp` and `titles` tables. This time we looked at the employees with a birth year of 1965 and who still worked for the company. The SQL query for this object can again be found [here](Queries/Employee_Database_challenge.sql), and the first lines of the query results below:
+The second objective was to find the number of employees eligible for the mentorship program - a program designed to look at near retirement employees and bring them into a part time position that allows them to pass their knowledge onto the younger generation of employees in the form of a mentorship-trainee relationship. To do this we created a new table `mentorship_eligibilty` by again using a `SELECT DISTINCT ON` statement to get unique results through employee number, and joining the `employee` table with the `dept_emp` and `titles` tables. This time we looked at the employees with a birth year of 1965 and who still worked for the company. The SQL query for this object can again be found [here](Queries/Employee_Database_challenge.sql), and the first lines of the query results below:
 
 ![Mentorship Eligibility Table](Images/mentorship_eligibility.png)
 
@@ -98,12 +98,51 @@ _It should be noted there is no need to combine this all into one query, but for
 The next query we could look at involves comparing and totalling the salaries of the retiring employees. We would first want to look at the **average retiring salary by job title** to see whether the Senior positions are retiring as the higher paid ones, as well as looking at the **total salaries by job title** (or in a separate query, department) to see how much the company would stop needing to pay. These totals could guide investment into the younger employees, and the future of the company. This query would look like:
 
 ```sql
--- missing
+-- Select the average salary, total salary, and number of salaries of retiring employees.
+SELECT ROUND(AVG(s.salary), 2) AS "Average Salary",
+	SUM (s.salary) AS "Total Salary",
+	COUNT (s.salary) AS "Number of Employees",
+	emps.title AS "Job Title"
+-- From a table of distinct employees (don't want repeated job titles).
+FROM(SELECT DISTINCT ON (rt.emp_no) rt.emp_no,
+        rt.first_name,
+        rt.last_name,
+        rt.title
+    -- From a table of retiring employees.
+    FROM (SELECT e.emp_no,
+        		e.first_name,
+        		e.last_name,
+        		ti.title,
+        		ti.from_date,
+        		ti.to_date
+        	FROM employees AS e
+        		INNER JOIN titles AS ti
+        			ON (e.emp_no = ti.emp_no)
+        		INNER JOIN dept_emp AS de
+        			ON (e.emp_no = de.emp_no)
+          -- Check for retiring employees still employed at the company.
+        	WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+        		AND (de.to_date = '9999-01-01')
+        	ORDER BY e.emp_no) AS rt
+    ORDER BY rt.emp_no, rt.to_date DESC
+) AS emps
+-- Join to get the salaries for each employee at their current job title.
+INNER JOIN salaries AS s
+	ON (emps.emp_no = s.emp_no)
+-- Group by Job Title.
+GROUP BY emps.title
+-- Order by Average Salary Descending, or Total Salary Descending.
+ORDER BY "Average Salary" DESC;
+-- ORDER BY "Total Salary" DESC;
 ```
 
-And the produced results are:
+_Again, no need to combine all into one query, we could have at each step made new tables and inserted them into the `FROM` statements._ And the produced results are sorting by **Average Salary descending**, are:
 
-![Average and Total Salaries of Retiring Employees Grouped by Job Title](Images/q2_salaries.png)
+![Average and Total Salaries of Retiring Employees Grouped by Job Title](Images/q2_salaries_average.png)
+
+And the produced results are sorting by **Total Salary descending**, are:
+
+![Average and Total Salaries of Retiring Employees Grouped by Job Title](Images/q2_salaries_total.png)
 
 ## Context
 
