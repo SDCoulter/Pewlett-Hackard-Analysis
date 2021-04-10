@@ -136,11 +136,11 @@ ORDER BY "Average Salary" DESC;
 -- ORDER BY "Total Salary" DESC;
 ```
 
-_Again, no need to combine all into one query, we could have at each step made new tables and inserted them into the `FROM` statements._ And the produced results are sorting by **Average Salary descending**, are:
+_Again, no need to combine all into one query, we could have at each step made new tables and inserted them into the_ `FROM` _statements._ And the produced results, sorting by **Average Salary descending**, are:
 
 ![Average and Total Salaries of Retiring Employees Grouped by Job Title](Images/q2_salaries_average.png)
 
-And the produced results are sorting by **Total Salary descending**, are:
+And the produced results, sorting by **Total Salary descending**, are:
 
 ![Average and Total Salaries of Retiring Employees Grouped by Job Title](Images/q2_salaries_total.png)
 
